@@ -1,4 +1,3 @@
-*
-!.gitignore
-!ramos-uc
-!ramos-uc/**
+__pycache__
+/*.json
+/log.txt
