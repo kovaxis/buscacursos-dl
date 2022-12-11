@@ -28,6 +28,10 @@ data = {}
 for period in periods:
     courses = CollectCourses()
     courses.collect(period, settings)
-    data[period] = courses.courses
+    for course in courses.courses.values():
+        course['sections'] = dict(
+            sorted(course["sections"].items(), key=lambda x: int(x[0])))
+    data[period] = dict(sorted(courses.courses.items()))
+data = dict(sorted(data.items(), reverse=True))
 json.dump(data, sys.stdout)
 print()
