@@ -12,11 +12,12 @@ class _RequirementsParser(HTMLParser):
         self.toogle = False
         self.values = []
         self.feed(text)
-        return self.values[0], self.values[1], self.values[2]
+        return self.values[0], self.values[1], self.values[2], self.values[3]
 
     def handle_starttag(self, tag, attrs):
         if tag == "span" and not self.toogle:
             self.toogle = True
+            self.values.append("")
 
     def handle_endtag(self, tag):
         if tag == "span" and self.toogle:
@@ -24,7 +25,7 @@ class _RequirementsParser(HTMLParser):
 
     def handle_data(self, data):
         if self.toogle and data:
-            self.values.append(data)
+            self.values[-1] += data
 
 
 def get_requirements(initials):

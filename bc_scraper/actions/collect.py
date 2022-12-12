@@ -25,7 +25,6 @@ class CollectCourses:
         self.new_sections = 0
         self.new_courses = 0
         self.courses = {}
-        self.sections = {}
 
     def process_courses(self, courses: List[Dict[str, str | bool | int]], period: str):
         """For a list of courses, process and gathers all related data and commits to DB."""
@@ -42,17 +41,16 @@ class CollectCourses:
                 if c["initials"] not in self.procesed_initials:
                     # Get Course related data
                     program = get_program(c["initials"])
-                    req, con, restr = get_requirements(c["initials"])
+                    req, con, restr, equiv = get_requirements(c["initials"])
 
                     # Save Course
-                    # NOTE: Original code checks if the initial already exists in the db
-                    # This means some duplicate courses might occur?
                     self.courses[c["initials"]] = {
                         "name": c["name"],
                         "credits": c["credits"],
-                        "requirements": req,
-                        "connector": con,
-                        "restrictions": restr,
+                        "req": req,
+                        "conn": con,
+                        "restr": restr,
+                        "equiv": equiv,
                         "program": program,
                         "school": c["school"],
                         "area": c["area"],
@@ -78,13 +76,6 @@ class CollectCourses:
                     "available_quota": c["available_quota"],
                 }
                 self.new_sections += 1
-
-                # Save schedules
-                # TODO: process schedules
-                # db_cursor.execute(sql.DELETE_FULL_SC, (section_id,))
-                # db_cursor.execute(sql.DELETE_INFO_SC, (section_id,))
-                # db_cursor.execute(insert_full_sc_query, (section_id,))
-                # db_cursor.execute(insert_info_sc_query, (section_id,))
 
                 # Commit to DB
                 log.info(
