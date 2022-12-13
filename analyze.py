@@ -19,7 +19,13 @@ class Expr:
     def find_unique_leaves(self, unique: dict[str, set[str]]):
         pass
 
+    def count_nodes(self):
+        return 1
+
     def recursive_apply(self, f):
+        return self
+
+    def simplify(self):
         return self
 
 
@@ -55,6 +61,12 @@ class Conn(Expr):
     def find_unique_leaves(self, unique: dict[str, set[str]]):
         for x in self.params:
             x.find_unique_leaves(unique)
+
+    def count_nodes(self):
+        cnt = 1
+        for x in self.params:
+            cnt += x.count_nodes()
+        return cnt
 
     def __hash__(self):
         return hash((self.op, tuple(self.params)))
@@ -437,7 +449,7 @@ for sigla, c in courses.items():
     # if c['category'] != "":
     #    print(f"{sigla} category = \"{c['category']}\"")
 
-    # restr = c['restrictions']
+    # restr = c['restr']
     # if restr not in unique:
     #    #print(f"{sigla} {restr}")
     #    unique.add(restr)
@@ -451,8 +463,8 @@ for sigla, c in courses.items():
     #            traceback.print_exc()
 
     try:
-        deps = BcParser.parse_deps(
-            c['requirements'], c['connector'], c['restrictions'])
+        deps = BcParser.parse_deps(c['req'], c['conn'], c['restr'])
+        c['deps'] = deps
         leaves = {}
         deps.find_unique_leaves(leaves)
         cnt = 0
@@ -461,7 +473,7 @@ for sigla, c in courses.items():
         req_counts.setdefault(cnt, {})[sigla] = deps
     except:
         print(
-            f"parsing deps '{c['requirements']}', '{c['connector']}', '{c['restrictions']}' for course {sigla} failed:")
+            f"parsing deps '{c['req']}', '{c['conn']}', '{c['restr']}' for course {sigla} failed:")
         traceback.print_exc()
 req_counts = dict(sorted(req_counts.items()))
 
@@ -470,11 +482,39 @@ for lhs, rhss in unique_lhs.items():
     for rhs in rhss:
         print(f"  {rhs}")
 
-for cnt, courses in req_counts.items():
-    print(f"{len(courses)} courses with {cnt} requirements")
-    if cnt > 10:
-        for code, deps in courses.items():
-            print(f"  {code}")
-            print(f"    original:   {deps}")
-            deps = deps.simplify()
-            print(f"    simplified: {deps}")
+diffs = {}
+
+for cnt, cs in req_counts.items():
+    print(f"{len(cs)} courses with {cnt} requirements")
+    if cnt >= 0:
+        for code, deps in cs.items():
+            orig = deps.count_nodes()
+            simplified = deps.simplify()
+            new = simplified.count_nodes()
+            diffs.setdefault(new-orig, set()).add(code)
+            if code == "FIS1523":
+                print(f"  {code}")
+                print(f"    original:   {deps}")
+                print(f"    simplified: {simplified}")
+
+for diff, cs in sorted(diffs.items()):
+    print(f"simplify delta = {diff}: {len(cs)} courses")
+    print(cs)
+
+
+def is_only_or(expr):
+    if not isinstance(expr, Conn):
+        return True
+    if not isinstance(expr, Or):
+        return False
+    for x in expr.params:
+        if not is_only_or(x):
+            return False
+    return True
+
+
+for code, c in courses.items():
+    if c['equiv'] != "No tiene":
+        equiv = BcParser.parse_requirement(c['equiv'])
+        if not is_only_or(equiv):
+            print(f"equiv for {code} = {equiv}")
