@@ -31,10 +31,11 @@ Un ejemplo con comentarios:
             "name": "Sistemas Digitales",
             "credits": 10,
             // Requerimientos en terminos de que ramos hay que tomar antes
-            "requirements": "MAT1202 o MAT1203",
+            "req": "MAT1202 o MAT1203",
             // Ver ejemplo mas adelante
-            "connector": "No tiene",
-            "restrictions": "No tiene",
+            "conn": "No tiene",
+            "restr": "No tiene",
+            "equiv": "No tiene",
             // Descripcion del curso
             "program": "CURSO: SISTEMAS DIGITALES...",
             // Facultad
@@ -75,15 +76,21 @@ Un ejemplo con comentarios:
         "ICS3413": {
             "name": "Finanzas",
             // Este ramo se puede tomar si tomaste ICS2613 *o* si has aprobado 300 creditos o mas
-            "requirements": "ICS2613",
-            "connector": "o",
-            "restrictions": "(Creditos >= 300)"
+            "req": "ICS2613",            // requirements
+            "conn": "o",                 // connector
+            "restr": "(Creditos >= 300)" // restrictions
+            "equiv": "(ICS3532)",        // equivalencies
             // ... omitidos por brevedad ...
         },
         "SUS1000": {
             // Quizas para los OFG?
             "area": "Ecolog Integra y Sustentabilidad",
             "category": "Aprendizaje Servicio",
+            // ... omitidos por brevedad ...
+        },
+        "TSL596": {
+            // Requiere que la carrera sea distinta a "Trabajo Social"
+            "restr": "(Carrera <> Trabajo Social)"
             // ... omitidos por brevedad ...
         }
     }
