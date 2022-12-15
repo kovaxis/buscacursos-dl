@@ -4,7 +4,7 @@ from ..scraper.requirements import get_requirements
 from .schedule import process_schedule
 from .errors import handle
 import logging
-from typing import Dict, List
+from typing import Dict, List, Union
 
 log = logging.getLogger("scraper")
 
@@ -26,7 +26,7 @@ class CollectCourses:
         self.new_courses = 0
         self.courses = {}
 
-    def process_courses(self, courses: List[Dict[str, str | bool | int]], period: str):
+    def process_courses(self, cfg, courses: List[Dict[str, Union[str, bool, int]]], period: str):
         """For a list of courses, process and gathers all related data and commits to DB."""
         for c in courses:
             # Skip recently procesed sections
@@ -40,8 +40,10 @@ class CollectCourses:
                 # Save Course if needed
                 if c["initials"] not in self.procesed_initials:
                     # Get Course related data
-                    program = get_program(c["initials"])
-                    req, con, restr, equiv = get_requirements(c["initials"])
+                    program = get_program(cfg, c["initials"])
+                    req, con, restr, equiv = get_requirements(cfg, c["initials"])
+
+                    print(f"got course {c} with req {req}, con {con}, restr {restr} and equiv {equiv}")
 
                     # Save Course
                     self.courses[c["initials"]] = {
@@ -87,21 +89,21 @@ class CollectCourses:
             except Exception as err:
                 handle(c, err)
 
-    def collect(self, period: str, settings: dict):
+    def collect(self, period: str, cfg: dict):
         """Iterates a search throw all BC and process all courses and sections found."""
 
-        testmode: bool = settings.get('testmode', False)
+        testmode: bool = cfg.get('testmode', False)
 
         LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         NUMBERS = "0123456789"
         for l1 in LETTERS:
             comb = l1
             log.info("Searching %s", comb)
-            courses = bc_search(comb, period)
+            courses = bc_search(cfg, comb, period)
             if testmode and len(courses) > 10:
                 courses = courses[:10]
                 pass
-            self.process_courses(courses, period)
+            self.process_courses(cfg, courses, period)
             if testmode:
                 break
             if len(courses) < 50:
@@ -110,32 +112,32 @@ class CollectCourses:
             for l2 in LETTERS:
                 comb = l1 + l2
                 log.info("Searching %s", comb)
-                courses = bc_search(comb, period)
-                self.process_courses(courses, period)
+                courses = bc_search(cfg, comb, period)
+                self.process_courses(cfg, courses, period)
                 if len(courses) < 50:
                     continue
 
                 for l3 in LETTERS:
                     comb = l1 + l2 + l3
                     log.info("Searching %s", comb)
-                    courses = bc_search(comb, period)
-                    self.process_courses(courses, period)
+                    courses = bc_search(cfg, comb, period)
+                    self.process_courses(cfg, courses, period)
                     if len(courses) < 50:
                         continue
 
                     for n1 in NUMBERS:
                         comb = l1 + l2 + l3 + n1
                         log.info("Searching %s", comb)
-                        courses = bc_search(comb, period)
-                        self.process_courses(courses, period)
+                        courses = bc_search(cfg, comb, period)
+                        self.process_courses(cfg, courses, period)
                         if len(courses) < 50:
                             continue
 
                         for n2 in NUMBERS:
                             comb = l1 + l2 + l3 + n1 + n2
                             log.info("Searching %s", comb)
-                            courses = bc_search(comb, period)
-                            self.process_courses(courses, period)
+                            courses = bc_search(cfg, comb, period)
+                            self.process_courses(cfg, courses, period)
 
         log.info("New courses: %s", self.new_courses)
         log.info("New sections: %s", self.new_sections)

@@ -2,7 +2,7 @@ from html.parser import HTMLParser
 from time import sleep
 from .request import get_text
 import logging
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Union, Optional
 
 log = logging.getLogger("scraper")
 
@@ -12,7 +12,7 @@ class _BCParser(HTMLParser):
     nested: int
     text: str
     current_school: str
-    courses: List[Dict[str, str | bool | int]]
+    courses: List[Dict[str, Union[str, bool, int]]]
 
     def __init__(self):
         super().__init__()
@@ -22,7 +22,7 @@ class _BCParser(HTMLParser):
         self.current_school = ""
         self.courses = []
 
-    def handle_starttag(self, tag: str, attrs: List[Tuple[str, str | None]]):
+    def handle_starttag(self, tag: str, attrs: List[Tuple[str, Optional[str]]]):
         if tag == "tr" and (
             ("class", "resultadosRowPar") in attrs
             or ("class", "resultadosRowImpar") in attrs
@@ -110,20 +110,20 @@ class _BCParser(HTMLParser):
 
 
 # Search
-def bc_search(query: str, period: str, nrc: bool = False):
+def bc_search(cfg, query: str, period: str, nrc: bool = False):
     parser = _BCParser()
     url = None
     if nrc:
         url = f"https://buscacursos.uc.cl/?cxml_semestre={period}&cxml_nrc={query}"
     else:
         url = f"https://buscacursos.uc.cl/?cxml_semestre={period}&cxml_sigla={query}"
-    resp = get_text(url)
+    resp = get_text(cfg, url)
 
     # Check valid response
     if len(resp) < 1000:
         log.warn("Too many request prevention")
         sleep(5)
-        resp = get_text(url)
+        resp = get_text(cfg, url)
 
     parser.feed(resp)
     return parser.courses

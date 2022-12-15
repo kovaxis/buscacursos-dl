@@ -28,8 +28,8 @@ class _RequirementsParser(HTMLParser):
             self.values[-1] += data
 
 
-def get_requirements(initials):
+def get_requirements(cfg, initials):
     parser = _RequirementsParser()
     query = f"http://catalogo.uc.cl/index.php?tmpl=component&view=requisitos&sigla={initials}"
-    text = get_text(query)
+    text = get_text(cfg, query)
     return parser.process(text)

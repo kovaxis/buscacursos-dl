@@ -32,10 +32,10 @@ class _ProgramParser(HTMLParser):
             self.text += data
 
 
-def get_program(initials):
+def get_program(cfg, initials):
     parser = _ProgramParser()
     query = (
         f"http://catalogo.uc.cl/index.php?tmpl=component&view=programa&sigla={initials}"
     )
-    text = get_text(query)
+    text = get_text(cfg, query)
     return parser.process(text)
