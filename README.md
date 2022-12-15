@@ -4,9 +4,9 @@ La información en bruto de buscacursos en la palma de tu mano.
 
 Un scraper simple basado en la implementación de [ramos-uc](https://github.com/open-source-uc/ramos-uc).
 
-## Datos precocinados
+## Descargar datos precocinados
 
-Los datos pre-scrapeados de buscacursos están disponibles para descargar en [releases](https://github.com/negamartin/buscacursos-dl/releases) como un `.json` gigante para cada semestre (solo 2022-2 hasta ahora).
+Los datos pre-scrapeados de buscacursos están disponibles para descargar en [releases](https://github.com/negamartin/buscacursos-dl/releases) como un `.json` gigante para cada semestre (datos del 2021 y el 2022).
 
 ## Correr el scraper
 
