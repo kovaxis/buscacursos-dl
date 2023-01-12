@@ -11,7 +11,7 @@ class _CatalogoParser(HTMLParser):
     first: bool
     nested: int
     text: str
-    cols: list[str]
+    cols: List[str]
     courses: List[Dict[str, Union[str, bool, int]]]
 
     def __init__(self):

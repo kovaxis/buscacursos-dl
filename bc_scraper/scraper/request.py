@@ -1,6 +1,6 @@
 import os
 import traceback
-from typing import Callable
+from typing import Callable, Dict
 import requests
 from time import sleep
 import logging
@@ -65,7 +65,7 @@ def get_text(cfg, query: str) -> str:
     return get_text_raw(query, key, fetch)
 
 
-def post_text(cfg, url: str, form_params: dict[str, str]):
+def post_text(cfg, url: str, form_params: Dict[str, str]):
     cookies = cfg.get("cookies")
     key = make_key({
         'm': 'post',

@@ -4,7 +4,7 @@ from ..scraper.requirements import get_requirements
 from .schedule import process_schedule
 from .errors import handle
 import logging
-from typing import Dict, List, Union
+from typing import Set, Dict, List, Union
 
 log = logging.getLogger("scraper")
 
@@ -13,14 +13,14 @@ CATALOGO_LIMIT = 1000
 
 
 class CollectCatalogo:
-    processed: set[str]
-    courses: dict[str, dict]
+    processed: Set[str]
+    courses: Dict[str, dict]
 
     def __init__(self):
         self.processed = set()
         self.courses = {}
 
-    def process_courses(self, cfg: dict, courses: list[dict]):
+    def process_courses(self, cfg: dict, courses: List[dict]):
         for c in courses:
             if c['initials'] in self.processed:
                 continue
