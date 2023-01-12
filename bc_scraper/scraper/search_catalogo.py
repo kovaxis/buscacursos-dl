@@ -68,7 +68,7 @@ def catalogo_search(cfg, query: str):
         "sigla": query,
         "nom_curso": "",
         "nivel": "",
-        "vigencia": "0",
+        "vigencia": "2",
         "Buscar": "Buscar",
         "option": "com_catalogo",
         "view": "cursoslist",
