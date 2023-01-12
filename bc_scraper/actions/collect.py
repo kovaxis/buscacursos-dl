@@ -40,10 +40,14 @@ class CollectCourses:
                 # Save Course if needed
                 if c["initials"] not in self.procesed_initials:
                     # Get Course related data
-                    program = get_program(cfg, c["initials"])
-                    req, con, restr, equiv = get_requirements(cfg, c["initials"])
+                    program = ""
+                    if cfg.get("fetch-program"):
+                        program = get_program(cfg, c["initials"])
+                    req, con, restr, equiv = get_requirements(
+                        cfg, c["initials"])
 
-                    print(f"got course {c} with req {req}, con {con}, restr {restr} and equiv {equiv}")
+                    print(
+                        f"got course {c} with req {req}, con {con}, restr {restr} and equiv {equiv}")
 
                     # Save Course
                     self.courses[c["initials"]] = {

@@ -4,9 +4,11 @@
 import os
 import traceback
 from bc_scraper.actions.collect import CollectCourses
+from bc_scraper.actions.collect_catalogo import CollectCatalogo
 import json
 import logging
 import sys
+
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger()
@@ -31,20 +33,33 @@ for i in reversed(range(len(args))):
         args.pop(i)
 
 if len(args) == 0:
-    print("usage: python3 main.py [--test] [periods...]")
+    print(
+        "usage: python3 main.py [--test] [--skip-program] [periods...]")
     print("  example: python3 main.py 2022-2 2022-1 > data.json 2> log.txt")
+    print("  if period is 'catalogo' then catalogo UC is scraped")
     sys.exit()
 periods = args
 
-settings = {"batch_size": 100, "cookies": cookies, "testmode": "test" in opts}
+settings = {"batch_size": 100, "cookies": cookies,
+            "testmode": "test" in opts, "fetch-program": "skip-program" not in opts}
 
-data = {}
-for period in periods:
-    courses = CollectCourses()
-    courses.collect(period, settings)
-    for course in courses.courses.values():
-        course['sections'] = dict(
-            sorted(course["sections"].items(), key=lambda x: int(x[0])))
-    data[period] = dict(sorted(courses.courses.items()))
-data = dict(sorted(data.items(), reverse=True))
-json.dump(data, sys.stdout)
+if len(args) == 1 and args[0] == "catalogo":
+    # Scrape catalogo UC
+    print("scraping catalogo UC")
+    courses = CollectCatalogo()
+    courses.collect(settings)
+    data = dict(sorted(courses.courses.items()))
+    json.dump(data, sys.stdout)
+else:
+    # Scrape buscacursos
+    print("scraping buscacursos")
+    data = {}
+    for period in periods:
+        courses = CollectCourses()
+        courses.collect(period, settings)
+        for course in courses.courses.values():
+            course['sections'] = dict(
+                sorted(course["sections"].items(), key=lambda x: int(x[0])))
+        data[period] = dict(sorted(courses.courses.items()))
+    data = dict(sorted(data.items(), reverse=True))
+    json.dump(data, sys.stdout)

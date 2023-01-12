@@ -492,14 +492,15 @@ for cnt, cs in req_counts.items():
             simplified = deps.simplify()
             new = simplified.count_nodes()
             diffs.setdefault(new-orig, set()).add(code)
-            if code == "FIS1523":
+            if code == "IIC2523":
                 print(f"  {code}")
                 print(f"    original:   {deps}")
                 print(f"    simplified: {simplified}")
 
 for diff, cs in sorted(diffs.items()):
     print(f"simplify delta = {diff}: {len(cs)} courses")
-    print(cs)
+    if len(cs) < 100:
+        print(cs)
 
 
 def is_only_or(expr):
@@ -514,7 +515,44 @@ def is_only_or(expr):
 
 
 for code, c in courses.items():
-    if c['equiv'] != "No tiene":
+    if c['equiv'] == "No tiene":
+        c['eqlist'] = []
+    else:
         equiv = BcParser.parse_requirement(c['equiv'])
         if not is_only_or(equiv):
             print(f"equiv for {code} = {equiv}")
+        if isinstance(equiv, Conn):
+            c['eqlist'] = equiv.params
+        else:
+            c['eqlist'] = [equiv]
+
+for code, c in courses.items():
+    for eq in c['eqlist']:
+        if eq not in courses:
+            # print(f"referenced course not found: {eq}")
+            continue
+        eqc = courses[eq]
+        if code not in eqc['eqlist']:
+            print(
+                f"course {code} has equivalency {eq}, but {eq} does not have equivalency {code}")
+
+empty_programs = set()
+schools = {}
+empty_school = set()
+empty_area = set()
+empty_category = set()
+for code, c in courses.items():
+    if c['program'] == "":
+        empty_programs.add(code)
+    schools.setdefault(c['school'], set()).add(code)
+    if c['school'] == "":
+        empty_school.add(code)
+    if c['area'] == "":
+        empty_area.add(code)
+    if c['category'] == "":
+        empty_category.add(code)
+print(f"empty programs: {empty_programs}")
+print(f"schools: {list(schools.keys())}")
+print(f"empty school: {len(empty_school)}")
+print(f"empty area: {len(empty_area)}")
+print(f"empty category: {len(empty_category)}")
