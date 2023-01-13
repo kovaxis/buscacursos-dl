@@ -1,6 +1,6 @@
 import os
 import traceback
-from typing import Callable
+from typing import Callable, Dict
 import requests
 from time import sleep
 import logging
@@ -28,16 +28,18 @@ def add_to_cache(key: str, resp: str):
     cachefile.flush()
 
 
-def get_text_raw(url: str, key: str, fetchtext: Callable[[], str]):
-    if key in cache:
-        log.info("request to %s hit cache", url)
-        return cache[key]
+def get_text_raw(cfg, url: str, key: str, fetchtext: Callable[[], str]):
+    if not cfg.get("disable-cache"):
+        if key in cache:
+            log.info("request to %s hit cache", url)
+            return cache[key]
 
     tries = 10
     while tries > 0:
         try:
             resp = fetchtext()
-            add_to_cache(key, resp)
+            if not cfg.get("disable-cache"):
+                add_to_cache(key, resp)
             return resp
         except Exception:
             log.error(f"request to {url} failed:")
@@ -62,10 +64,10 @@ def get_text(cfg, query: str) -> str:
     def fetch():
         return requests.get(query, headers={"Cookie": cookies}).text
 
-    return get_text_raw(query, key, fetch)
+    return get_text_raw(cfg, query, key, fetch)
 
 
-def post_text(cfg, url: str, form_params: dict[str, str]):
+def post_text(cfg, url: str, form_params: Dict[str, str]):
     cookies = cfg.get("cookies")
     key = make_key({
         'm': 'post',
@@ -77,4 +79,4 @@ def post_text(cfg, url: str, form_params: dict[str, str]):
     def post():
         return requests.post(url, data=form_params, headers={"Cookie": cookies}).text
 
-    return get_text_raw(f"{url} & {form_params}", key, post)
+    return get_text_raw(cfg, f"{url} & {form_params}", key, post)

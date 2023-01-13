@@ -40,8 +40,13 @@ if len(args) == 0:
     sys.exit()
 periods = args
 
-settings = {"batch_size": 100, "cookies": cookies,
-            "testmode": "test" in opts, "fetch-program": "skip-program" not in opts}
+settings = {
+    "batch_size": 100,
+    "cookies": cookies,
+    "testmode": "test" in opts,
+    "fetch-program": "skip-program" not in opts,
+    "disable-cache": "disable-cache" in opts
+}
 
 if len(args) == 1 and args[0] == "catalogo":
     # Scrape catalogo UC

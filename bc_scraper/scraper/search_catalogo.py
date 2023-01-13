@@ -11,7 +11,7 @@ class _CatalogoParser(HTMLParser):
     first: bool
     nested: int
     text: str
-    cols: list[str]
+    cols: List[str]
     courses: List[Dict[str, Union[str, bool, int]]]
 
     def __init__(self):
@@ -68,7 +68,7 @@ def catalogo_search(cfg, query: str):
         "sigla": query,
         "nom_curso": "",
         "nivel": "",
-        "vigencia": "0",
+        "vigencia": "2",
         "Buscar": "Buscar",
         "option": "com_catalogo",
         "view": "cursoslist",
