@@ -1,26 +1,78 @@
 # buscacursos-dl
 
-La información en bruto de buscacursos en la palma de tu mano.
+La información en bruto de [Buscacursos](https://buscacursos.uc.cl/) y [Catálogo UC](https://catalogo.uc.cl/) en la palma de tu mano.
 
 Un scraper simple basado en la implementación de [ramos-uc](https://github.com/open-source-uc/ramos-uc).
 
 ## Descargar datos precocinados
 
-Los datos pre-scrapeados de buscacursos están disponibles para descargar en [releases](https://github.com/negamartin/buscacursos-dl/releases) como un `.json` gigante para cada semestre (datos del 2021 y el 2022).
+Los datos pre-scrapeados de buscacursos y catálogo UC están disponibles para descargar en [releases](https://github.com/negamartin/buscacursos-dl/releases) como archivos `.json` gigantes.
 
 ## Correr el scraper
 
-Para correr el scraper basta con clonar el repositorio y correr:
+El primer paso es clonar el repositorio:
 
-```sh
-python3 main.py 2022-2 2022-1 2021-2 > courses.json 2> log.txt
+```bash
+git clone https://github.com/negamartin/buscacursos-dl.git
 ```
 
-Notar que el scraper puede tomar varias horas en descargar todos los ramos.
+Luego, elegir si quieres scrapear buscacursos, catalogo, o ambos.
+
+### Scrapear Buscacursos
+
+Buscacursos contiene informacion sobre las instancias de los cursos que se han dictado en los últimos semestres,
+incluyendo profesores, horarios, etc.
+La información de buscacursos está asociada a un periodo particular, y *no* contiene información sobre los cursos
+que no se dictaron ese periodo.
+
+Para correr el scraper de buscacursos primero es necesario elegir los periodos a scrapear (eg. `2023-1`, `2022-2`).
+Luego, se corre el archivo `main.py` con los periodos como argumentos:
+
+```bash
+python3 main.py 2023-1 2022-2 > stdout.txt 2> stderr.txt
+```
+
+### Scrapear Catálogo UC
+
+Catálogo UC contiene información sobre todos los ramos en la base de datos de la UC, aunque no contiene información
+sobre instancias particulares de estos ramos (eg. no tiene información sobre profesores, horarios ni periodos en
+que se han dictado los cursos).
+Hay aproximadamente 10x la cantidad de cursos disponibles que en Buscacursos, ya que se incluyen los cursos obsoletos.
+
+Para correr el scraper de catálogo UC, es necesario entregar como único argumento la palabra `catalogo`:
+
+```bash
+python3 main.py catalogo > stdout.txt 2> stderr.txt
+```
+
+### Juntar resultados de varios scrapeos
+
+El script `make-universal.py` permite agregar los resultados de varios scrapeos en una mega base de datos.
+En particular, permite agrupar scrapeos de buscacursos y de catálogo UC en un mismo `.json` universal.
+
+Por ejemplo, para juntar los datos de un scrapeo de catalogo y 2 scrapeos de buscacursos:
+
+```bash
+python3 make-universal.py catalogo.json buscacursos-1.json buscacursos-2.json
+```
+
+El script autodetecta si los `.json` son informacion de buscacursos o de catalogo.
+Debe haber exactamente 1 `.json` de Catálogo UC.
+Debe haber al menos 1 `.json` de Buscacursos, ya que se usa para suplir la información que Catálogo no provee.
+
+### Detalles importantes
+
+- El scraper puede tomar varias horas en descargar todos los cursos.
+- El scraper imprime el progreso y el `.json` final a `stdout` y `stderr`.
+    En particular, **no** guarda el `.json` resultante en ningún archivo en particular.
+    Los únicos otros archivos con los que interactúa el scraper es `.cred` (cookies que incluir
+    en los requests) y `.requestcache` (cache).
+- El scraper **no** puede scrapear buscacursos y catalogo en una misma ejecucion.
+- Para obtener un `.json` limpio con los resultados es necesario extrar la última línea de output de `stdout.txt`.
 
 ## Formato de los datos
 
-Un ejemplo con comentarios:
+### Formato del scraper de buscacursos
 
 ```javascript
 {

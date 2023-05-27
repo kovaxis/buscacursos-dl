@@ -19,7 +19,7 @@ for i in reversed(range(len(args))):
         args.pop(i)
 
 if not args:
-    log("usage: make-universal.py [options] <data files...>")
+    log("usage: python3 make-universal.py [options] <data files...>")
     log("  --strip-program    Remove course program descriptions.")
     sys.exit()
 
