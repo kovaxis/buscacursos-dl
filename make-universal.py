@@ -21,6 +21,7 @@ for i in reversed(range(len(args))):
 if not args:
     log("usage: make-universal.py [options] <data files...>")
     log("  --strip-program    Remove course program descriptions.")
+    log("  --compress         Compress the resulting JSON using LZMA.")
     sys.exit()
 
 universal = {}
@@ -72,10 +73,16 @@ for period, data in sorted(buscacursos.items()):
             continue
         dst = catalogo[code]
         assert isinstance(dst, dict)
-        for attr in ['credits', 'req', 'conn', 'restr', 'equiv', 'program']:
+        for attr in ['credits', 'req', 'conn', 'restr', 'equiv']:
             if src[attr] != dst[attr]:
                 log(
                     f"buscacursos (period {period}) and catalogo dont agree on attribute {attr} of course {code} (buscacursos says '{src[attr]}', catalogo says '{dst[attr]}')")
+        if src['program'] != '':
+            if dst['program'] == '':
+                log(f"ignoring program info in buscacursos, because catalogo has no program info")
+            else:
+                if src['program'] != dst['program']:
+                    log(f"buscacursos (period {period}) and catalogo dont agree on program of course {code} (buscacursos: {len(src['program'])} characters starting with \"{src['program'][:30]}\", catalogo: {len(src['program'])} characters starting with \"{dst['program'][:30]}\")")
         dst['area'] = src['area']
         dst['category'] = src['category']
         dst['instances'][period] = {
@@ -84,4 +91,7 @@ for period, data in sorted(buscacursos.items()):
             'sections': src['sections'],
         }
 
-sys.stdout.buffer.write(lzma.compress(json.dumps(catalogo).encode("utf-8")))
+out = json.dumps(catalogo).encode("utf-8")
+if 'compress' in opts:
+    out = lzma.compress(out)
+sys.stdout.buffer.write(out)
