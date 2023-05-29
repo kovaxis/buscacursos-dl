@@ -153,6 +153,7 @@ Debe haber al menos 1 `.json` de Buscacursos, ya que se usa para suplir la infor
                 "1": {
                     "quota": {
                         "Vacantes libres": 63,
+                        // Programa compuesto de College y restringido a Pregrado
                         "09 - College/Pregrado": 18,
                         "20 - Educación/Pregrado": 10,
                         "56 - Historia/Pregrado": 4,
