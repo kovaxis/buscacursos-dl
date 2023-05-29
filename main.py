@@ -61,16 +61,18 @@ if not settings.get("disable-cache"):
 
 if len(args) == 1 and args[0] == "catalogo":
     # Scrape catalogo UC
-    print("scraping catalogo UC")
+    log.info("scraping catalogo UC")
     courses = CollectCatalogo()
     courses.collect(settings)
     data = dict(sorted(courses.courses.items()))
     json.dump(data, sys.stdout)
 else:
     # Scrape buscacursos
-    print("scraping buscacursos")
+    log.info(f"scraping {len(periods)} buscacurso periods")
     data = {}
     for period in periods:
+        log.info(f"scraping buscacurso period {period}")
+        print(f"period[{period}]")
         courses = CollectCourses()
         courses.collect(period, settings)
         for course in courses.courses.values():
