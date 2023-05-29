@@ -1,10 +1,12 @@
 from ..scraper.search import bc_search
 from ..scraper.programs import get_program
 from ..scraper.requirements import get_requirements
+from ..scraper.banner import banner_quota
 from .schedule import process_schedule
 from .errors import handle
 import logging
 from typing import Dict, List, Union
+import json
 
 log = logging.getLogger("scraper")
 
@@ -46,9 +48,6 @@ class CollectCourses:
                     req, con, restr, equiv = get_requirements(
                         cfg, c["initials"])
 
-                    print(
-                        f"got course {c} with req {req}, con {con}, restr {restr} and equiv {equiv}")
-
                     # Save Course
                     self.courses[c["initials"]] = {
                         "name": c["name"],
@@ -63,9 +62,16 @@ class CollectCourses:
                         "category": c["category"],
                         "sections": {},
                     }
+                    print(
+                        f"course[{c['initials']}]: {json.dumps(self.courses[c['initials']])}")
                     self.new_courses += 1
 
                     self.procesed_initials[c["initials"]] = True
+
+                # Get course quota
+                quota = {}
+                if cfg.get("fetch-quota"):
+                    quota = banner_quota(cfg, c["nrc"], period)
 
                 # Save Section
                 self.courses[c["initials"]]["sections"][str(c["section"])] = {
@@ -78,9 +84,10 @@ class CollectCourses:
                     "is_removable": c["is_removable"],
                     "is_special": c["is_special"],
                     "total_quota": c["total_quota"],
-                    # NOTE: Depends on the exact timing of the scrape
-                    "available_quota": c["available_quota"],
+                    "quota": quota,
                 }
+                print(
+                    f"section[{c['initials']}][{c['section']}]: {json.dumps(self.courses[c['initials']]['sections'][str(c['section'])])}")
                 self.new_sections += 1
 
                 # Commit to DB
@@ -102,6 +109,7 @@ class CollectCourses:
         NUMBERS = "0123456789"
         for l1 in LETTERS:
             comb = l1
+            comb = "IEE2713"
             log.info("Searching %s", comb)
             courses = bc_search(cfg, comb, period)
             if testmode and len(courses) > 10:

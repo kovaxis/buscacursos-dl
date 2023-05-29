@@ -34,7 +34,7 @@ for i in reversed(range(len(args))):
 
 if len(args) == 0:
     print(
-        "usage: python3 main.py [--test] [--skip-program] [periods...]")
+        "usage: python3 main.py [--test] [--skip-program] [--skip-quota] [periods...]")
     print("  example: python3 main.py 2022-2 2022-1 > data.json 2> log.txt")
     print("  if period is 'catalogo' then catalogo UC is scraped")
     sys.exit()
@@ -45,6 +45,7 @@ settings = {
     "cookies": cookies,
     "testmode": "test" in opts,
     "fetch-program": "skip-program" not in opts,
+    "fetch-quota": "skip-quota" not in opts,
     "disable-cache": "disable-cache" in opts
 }
 

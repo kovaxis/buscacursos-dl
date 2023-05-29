@@ -118,10 +118,13 @@ Debe haber al menos 1 `.json` de Buscacursos, ya que se usa para suplir la infor
                     "is_removable": true,
                     // ?
                     "is_special": false,
-                    // Cupos totales para la seccion
+                    // Cupos totales ofrecidos para la seccion
                     "total_quota": 60,
-                    // Cupos disponibles al momento de scrapear (informacion inutil)
-                    "available_quota": 11
+                    // Desglose sobre los programas para los que se ofrecen los cupos
+                    "quota": {
+                        "Vacantes libres": 57,
+                        "09 - College": 3
+                    }
                 }
             }
         },
@@ -142,7 +145,23 @@ Debe haber al menos 1 `.json` de Buscacursos, ya que se usa para suplir la infor
         },
         "TSL596": {
             // Requiere que la carrera sea distinta a "Trabajo Social"
-            "restr": "(Carrera <> Trabajo Social)"
+            "restr": "(Carrera <> Trabajo Social)",
+            // ... omitidos por brevedad ...
+        },
+        "IHI0224": {
+            "sections": {
+                "1": {
+                    "quota": {
+                        "Vacantes libres": 63,
+                        "09 - College/Pregrado": 18,
+                        "20 - Educación/Pregrado": 10,
+                        "56 - Historia/Pregrado": 4,
+                        "97 - Actividades Universitarias": 2
+                    },
+                    // ... omitidos por brevedad ...
+                },
+                // ... omitidos por brevedad ...
+            },
             // ... omitidos por brevedad ...
         }
     }
