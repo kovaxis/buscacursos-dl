@@ -5,9 +5,11 @@ import os
 import traceback
 from bc_scraper.actions.collect import CollectCourses
 from bc_scraper.actions.collect_catalogo import CollectCatalogo
+from bc_scraper.scraper.request import load_cache
 import json
 import logging
 import sys
+
 
 
 logging.basicConfig(level=logging.INFO)
@@ -34,8 +36,13 @@ for i in reversed(range(len(args))):
 
 if len(args) == 0:
     print(
-        "usage: python3 main.py [--test] [--skip-program] [--skip-quota] [periods...]")
-    print("  example: python3 main.py 2022-2 2022-1 > data.json 2> log.txt")
+        "usage: python3 main.py [options] [periods...]")
+    print("  options:")
+    print("    --skip-program   Do not fetch course program text.")
+    print("    --skip-quota     Do not fetch course quota information.")
+    print("    --disable-cache  Do not load or store cache from `.requestcache`.")
+    print("    --test           Search for up to 10 courses and then stop.")
+    print("  example: python3 main.py 2022-2 2022-1 > stdout.txt 2> stderr.txt")
     print("  if period is 'catalogo' then catalogo UC is scraped")
     sys.exit()
 periods = args
@@ -48,6 +55,9 @@ settings = {
     "fetch-quota": "skip-quota" not in opts,
     "disable-cache": "disable-cache" in opts
 }
+
+if not settings.get("disable-cache"):
+    load_cache()
 
 if len(args) == 1 and args[0] == "catalogo":
     # Scrape catalogo UC

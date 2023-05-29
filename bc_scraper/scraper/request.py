@@ -13,19 +13,23 @@ log = logging.getLogger("scraper")
 
 
 cache = {}
-if os.path.exists(".requestcache"):
-    with open(".requestcache", 'r') as file:
-        for line in file.readlines():
-            c = json.loads(line)
-            cache[c['key']] = c['resp']
-cachefile = open(".requestcache", 'a')
+cachefile = None
+
+def load_cache():
+    if os.path.exists(".requestcache"):
+        with open(".requestcache", 'r') as file:
+            for line in file.readlines():
+                c = json.loads(line)
+                cache[c['key']] = c['resp']
+    cachefile = open(".requestcache", 'a')
 
 
 def add_to_cache(key: str, resp: str):
     cache[key] = resp
-    json.dump({'key': key, 'resp': resp}, cachefile)
-    cachefile.write('\n')
-    cachefile.flush()
+    if cachefile:
+        json.dump({'key': key, 'resp': resp}, cachefile)
+        cachefile.write('\n')
+        cachefile.flush()
 
 
 def get_text_raw(cfg, url: str, key: str, fetchtext: Callable[[], str]):
