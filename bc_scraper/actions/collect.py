@@ -109,7 +109,6 @@ class CollectCourses:
         NUMBERS = "0123456789"
         for l1 in LETTERS:
             comb = l1
-            comb = "IEE2713"
             log.info("Searching %s", comb)
             courses = bc_search(cfg, comb, period)
             if testmode and len(courses) > 10:
