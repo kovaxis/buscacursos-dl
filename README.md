@@ -32,6 +32,9 @@ Luego, se corre el archivo `main.py` con los periodos como argumentos:
 python3 main.py 2023-1 2022-2 > stdout.txt 2> stderr.txt
 ```
 
+El resultado del scraper se condensa en un JSON en la ultima linea de `stdout.txt`.
+Se puede extraer esta ultima linea a un archivo aislado usando el script `get-json.py`.
+
 ### Scrapear Catálogo UC
 
 Catálogo UC contiene información sobre todos los ramos en la base de datos de la UC, aunque no contiene información
@@ -44,6 +47,9 @@ Para correr el scraper de catálogo UC, es necesario entregar como único argume
 ```bash
 python3 main.py catalogo > stdout.txt 2> stderr.txt
 ```
+
+El resultado del scraper se condensa en un JSON en la ultima linea de `stdout.txt`.
+Se puede extraer esta ultima linea a un archivo aislado usando el script `get-json.py`.
 
 ### Juntar resultados de varios scrapeos
 
