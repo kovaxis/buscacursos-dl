@@ -38,10 +38,11 @@ if len(args) == 0:
     print(
         "usage: python3 main.py [options] [periods...]")
     print("  options:")
-    print("    --skip-program   Do not fetch course program text.")
-    print("    --skip-quota     Do not fetch course quota information.")
-    print("    --disable-cache  Do not load or store cache from `.requestcache`.")
-    print("    --test           Search for up to 10 courses and then stop.")
+    print("    --skip-program       Do not fetch course program text.")
+    print("    --skip-requirements  Do not fetch course requirements information.")
+    print("    --skip-quota         Do not fetch course quota information.")
+    print("    --disable-cache      Do not load or store cache from `.requestcache`.")
+    print("    --test               Search for up to 10 courses and then stop.")
     print("  example: python3 main.py 2022-2 2022-1 > stdout.txt 2> stderr.txt")
     print("  if period is 'catalogo' then catalogo UC is scraped")
     sys.exit()
@@ -53,6 +54,7 @@ settings = {
     "testmode": "test" in opts,
     "fetch-program": "skip-program" not in opts,
     "fetch-quota": "skip-quota" not in opts,
+    "fetch-requirements": "skip-requirements" not in opts,
     "disable-cache": "disable-cache" in opts
 }
 

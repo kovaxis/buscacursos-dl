@@ -1,3 +1,4 @@
+import json
 from ..scraper.search_catalogo import catalogo_search
 from ..scraper.programs import get_program
 from ..scraper.requirements import get_requirements
@@ -31,10 +32,9 @@ class CollectCatalogo:
                 program = ""
                 if cfg.get("fetch-program"):
                     program = get_program(cfg, c["initials"])
-                req, con, restr, equiv = get_requirements(cfg, c["initials"])
-
-                print(
-                    f"got course {c} with req {req}, con {con}, restr {restr} and equiv {equiv}")
+                req, con, restr, equiv = "", "", "", ""
+                if cfg.get("fetch-requirements"):
+                    req, con, restr, equiv = get_requirements(cfg, c["initials"])
 
                 # Save course
                 self.courses[c['initials']] = {
@@ -48,6 +48,8 @@ class CollectCatalogo:
                     'school': c['school'],
                     'relevance': c['relevance'],
                 }
+
+                print(f"course[{c['initials']}]: {json.dumps(self.courses[c['initials']])}")
             except Exception as err:
                 handle(c, err)
 

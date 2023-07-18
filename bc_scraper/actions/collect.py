@@ -45,8 +45,9 @@ class CollectCourses:
                     program = ""
                     if cfg.get("fetch-program"):
                         program = get_program(cfg, c["initials"])
-                    req, con, restr, equiv = get_requirements(
-                        cfg, c["initials"])
+                    req, con, restr, equiv = "", "", "", ""
+                    if cfg.get("fetch-requirements"):
+                        req, con, restr, equiv = get_requirements(cfg, c["initials"])
 
                     # Save Course
                     self.courses[c["initials"]] = {
