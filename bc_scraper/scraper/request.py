@@ -41,7 +41,7 @@ def get_text_raw(cfg, url: str, key: str, fetchtext: Callable[[], str]):
             return cache[key]
 
     tries = 10
-    while tries > 0:
+    while True:
         try:
             resp = fetchtext()
             if not cfg.get("disable-cache"):
@@ -52,6 +52,10 @@ def get_text_raw(cfg, url: str, key: str, fetchtext: Callable[[], str]):
             log.error(traceback.format_exc())
             tries -= 1
             sleep(1)
+            if tries > 0:
+                log.log("retrying...")
+            else:
+                break
     raise Exception(f'too many tries to URL "{url}"')
 
 
