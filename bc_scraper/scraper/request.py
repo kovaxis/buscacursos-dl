@@ -16,6 +16,8 @@ cache = {}
 cachefile = None
 
 def load_cache():
+    global cachefile
+    
     if os.path.exists(".requestcache"):
         with open(".requestcache", 'r') as file:
             for line in file.readlines():
